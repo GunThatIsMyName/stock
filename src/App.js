@@ -1,12 +1,37 @@
-import React, { useState, useEffect } from 'react'
-import { FaSearch } from 'react-icons/fa'
-import Photo from './Photo'
-// const clientID = `?client_id=${process.env.REACT_APP_ACCESS_KEY}`
-const mainUrl = `https://api.unsplash.com/photos/`
-const searchUrl = `https://api.unsplash.com/search/photos/`
+import React, { useEffect, useState } from "react";
+import { FaSearch } from "react-icons/fa";
+import { useGlobalContext } from "./context";
+import Photo from "./Photo";
 
 function App() {
-  return <h2>stock photos starter</h2>
+  const { list, loading,value,setValue,getData } = useGlobalContext(); 
+  const handleSubmit=(e)=>{
+    e.preventDefault();
+    setValue('');
+    getData();
+  }
+  return (
+    <main>
+      <section className="search">
+        <form onSubmit={handleSubmit} className="search-form">
+          <input onChange={(e)=>setValue(e.target.value)} type="text" value={value} placeholder="search" className="form-input" />
+          <button className="submit-btn" type="submit">
+            <FaSearch />
+          </button>
+        </form>
+      </section>
+      <section className="photos">
+        <div className="photos-center">
+          {list.map((item, idx) => {
+            const {id,likes,alt_description,urls:{regular},user:{username,portfolio_url,profile_image:{medium}}}=item
+            const info = {id,likes,alt_description,regular,username,portfolio_url,medium}
+            return <Photo key={id} {...info} />;
+          })}
+        </div>
+        {loading && <h2 className="loading">loading ...</h2>}
+      </section>
+    </main>
+  );
 }
 
-export default App
+export default App;
