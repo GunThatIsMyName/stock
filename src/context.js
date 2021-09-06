@@ -8,7 +8,6 @@ export const AppContext = createContext();
 
 const AppProvider = ({children})=>{
     const [loading,setLoaindg]=useState(false)
-    console.log(loading)
     const [list,setList]=useState([])
     const [page,setPage]=useState(1)
     const [value,setValue]=useState('')
@@ -19,18 +18,24 @@ const AppProvider = ({children})=>{
         setLoaindg(true)
         let dataApi;
         if(value){
-            dataApi =`${searchUrl}?client_id=${clientID}${searchQuery}`;
+            dataApi =`${searchUrl}?client_id=${clientID}${urlPage}${searchQuery}`;
         }else{
             dataApi =`${mainUrl}?client_id=${clientID}${urlPage}`
         }
-        console.log(value,"밸류")
         try{
             const response = await fetch(dataApi)
-            const data = await response.json();      
-            console.log(data,"data")  
-            // setList((old)=>{
-            //     return [...old,...data]
-            // })
+            const data = await response.json(); 
+            setList((old)=>{
+                if(value && page ===1){
+                    return data.results;
+                }
+                else if(value){
+                    return[...old,...data.results]
+                }else{
+                    console.log(value,"있나요?")
+                    return [...old,...data]
+                }
+            })
         }catch{
             throw new Error("hohoho");
         }finally{
@@ -40,8 +45,8 @@ const AppProvider = ({children})=>{
 
     useEffect(()=>{
         getData();
-    },[page,value])
-
+        // eslint-disable-next-line
+    },[page])
     useEffect(() => {
         const event = window.addEventListener("scroll",()=>{
             if(window.scrollY+window.innerHeight >= document.body.clientHeight){
@@ -56,7 +61,7 @@ const AppProvider = ({children})=>{
     },[])
 
     return(
-        <AppContext.Provider value={{loading,list,value,setValue}}>
+        <AppContext.Provider value={{setPage,loading,list,getData,value,setValue,getData}}>
             {children}
         </AppContext.Provider>
     )

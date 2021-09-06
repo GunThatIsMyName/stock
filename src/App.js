@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { FaSearch } from "react-icons/fa";
 import { useGlobalContext } from "./context";
 import Photo from "./Photo";
 
 function App() {
-  const { list, loading,value,setValue,getData } = useGlobalContext(); 
+  const { list, loading,value,setValue,setPage,getData } = useGlobalContext(); 
   const handleSubmit=(e)=>{
     e.preventDefault();
-    setValue('');
+    setPage(1)
     getData();
   }
   return (
